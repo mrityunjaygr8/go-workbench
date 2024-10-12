@@ -1,0 +1,15 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  run:
+    cmds:
+      - air
+    silent: true
+  default:
+    cmds:
+      - task: run
