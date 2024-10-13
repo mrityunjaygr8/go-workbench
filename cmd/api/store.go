@@ -14,6 +14,8 @@ type store interface {
 }
 
 type StoreMeta interface {
+	Persist() error
+	Load() error
 }
 
 type User struct {

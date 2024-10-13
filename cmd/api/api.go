@@ -57,6 +57,10 @@ func (a *application) run(mux http.Handler) error {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
+		err := a.store.Persist()
+		if err != nil {
+			a.logger.Println(err)
+		}
 		server.SetKeepAlivesEnabled(false)
 		if err := server.Shutdown(ctx); err != nil {
 			a.logger.Fatalf("Could not gracefully shutdown the server: %v\n", err)

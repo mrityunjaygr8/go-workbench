@@ -1,15 +1,28 @@
 package main
 
+import (
+	"encoding/json"
+	"os"
+)
+
 const FILE_NAME = "store.json"
 
 func NewInMemoryStore() (store, error) {
-	users := make([]User, 0)
-	tokens := make([]Token, 0)
+	s := &InMemoryStore{
+		users:  make([]User, 0),
+		tokens: make([]Token, 0),
+	}
 
-	return &InMemoryStore{
-		users:  users,
-		tokens: tokens,
-	}, nil
+	// Try to load existing data
+	err := s.Load()
+	if err != nil {
+		// If the file doesn't exist, it's not an error, we'll start with an empty store
+		if !os.IsNotExist(err) {
+			return nil, err
+		}
+	}
+
+	return s, nil
 }
 
 type InMemoryStore struct {
@@ -43,4 +56,43 @@ func (u *InMemoryStore) InsertToken(token Token) error {
 
 func (u *InMemoryStore) ListTokens() ([]Token, error) {
 	return u.tokens, nil
+}
+
+func (u *InMemoryStore) Persist() error {
+	data := struct {
+		Users  []User  `json:"users"`
+		Tokens []Token `json:"tokens"`
+	}{
+		Users:  u.users,
+		Tokens: u.tokens,
+	}
+
+	jsonData, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(FILE_NAME, jsonData, 0644)
+}
+
+func (u *InMemoryStore) Load() error {
+	jsonData, err := os.ReadFile(FILE_NAME)
+	if err != nil {
+		return err
+	}
+
+	var data struct {
+		Users  []User  `json:"users"`
+		Tokens []Token `json:"tokens"`
+	}
+
+	err = json.Unmarshal(jsonData, &data)
+	if err != nil {
+		return err
+	}
+
+	u.users = data.Users
+	u.tokens = data.Tokens
+
+	return nil
 }
