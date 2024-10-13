@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
@@ -12,31 +13,26 @@ type createUserRequest struct {
 	LastName  string `json:"lastName"`
 }
 
+type ErrorMessage struct {
+	Error string `json:"error"`
+}
+
 func (a *application) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload createUserRequest
 	_ = json.NewDecoder(r.Body).Decode(&payload)
-	a.logger.Println(payload)
 
-	userExists, err := a.store.Users.GetUserByEmail(payload.Email)
+	err := a.createUser(payload)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+		if errors.Is(err, ErrUserExists) {
+			msg := ErrorMessage{
+				Error: err.Error(),
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusBadRequest)
+			_ = json.NewEncoder(w).Encode(msg)
+			return
 
-	if userExists != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	user := User{
-		Email:     payload.Email,
-		FirstName: payload.FirstName,
-		LastName:  payload.LastName,
-		Password:  payload.Password,
-	}
-
-	err = a.store.Users.CreateUser(user)
-	if err != nil {
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -45,7 +41,7 @@ func (a *application) createUserHandler(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusCreated)
 }
 func (a *application) listUsersHandler(w http.ResponseWriter, r *http.Request) {
-	users, err := a.store.Users.ListUsers()
+	users, err := a.listUsers()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

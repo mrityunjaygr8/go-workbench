@@ -1,61 +1,49 @@
 package main
 
-import "github.com/google/uuid"
+import (
+	"fmt"
+	"time"
 
-type store struct {
-	Users interface {
-		ListUsers() ([]User, error)
-		CreateUser(user User) error
-		GetUserByEmail(email string) (*User, error)
-	}
+	"github.com/google/uuid"
+)
+
+type store interface {
+	UserManager
+	StoreMeta
+	AuthManager
 }
 
-func NewInMemoryStore() store {
-	dict := make(map[string]any)
-	dict["users"] = make([]User, 0)
-	return store{
-		Users: &InMemoryStoreUsers{
-			storage: dict["users"].([]User),
-		},
-	}
+type StoreMeta interface {
 }
 
 type User struct {
 	Email     string    `json:"email"`
-	FirstName string    `json:"firstName"`
-	LastName  string    `json:"lastName"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
 	Password  string    `json:"-"`
 	ID        uuid.UUID `json:"id"`
 }
 
-type InMemoryStore struct {
-	storage map[string]any
+type Token struct {
+	Token     string    `json:"token"`
+	UserId    uuid.UUID `json:"user_id"`
+	Revoked   bool      `json:"revoked"`
+	Expiry    time.Time `json:"expiry"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
-type InMemoryStoreUsers struct {
-	storage []User
+type UserManager interface {
+	ListUsers() ([]User, error)
+	InsertUser(user User) error
+	GetUserByEmail(email string) (*User, error)
 }
 
-func (u *InMemoryStoreUsers) ListUsers() ([]User, error) {
-	return u.storage, nil
+type AuthManager interface {
+	InsertToken(token Token) error
+	ListTokens() ([]Token, error)
+	// RevokeToken(token string) error
+	// Logout() error
 }
 
-func (u *InMemoryStoreUsers) CreateUser(user User) error {
-	uuid, err := uuid.NewV7()
-	if err != nil {
-		return err
-	}
-
-	user.ID = uuid
-	u.storage = append(u.storage, user)
-	return nil
-}
-
-func (u *InMemoryStoreUsers) GetUserByEmail(email string) (*User, error) {
-	for _, user := range u.storage {
-		if user.Email == email {
-			return &user, nil
-		}
-	}
-	return nil, nil
-}
+var ErrInvalidCredential = fmt.Errorf("Invalid email or password provided")
+var ErrUserNotFound = fmt.Errorf("User not found")

@@ -28,6 +28,8 @@ func (a *application) mountRoutes() http.Handler {
 	mux.HandleFunc("GET /long", longRequestHandler)
 	mux.HandleFunc("POST /api/v1/users", a.createUserHandler)
 	mux.HandleFunc("GET /api/v1/users", a.listUsersHandler)
+	mux.HandleFunc("POST /api/v1/auth/login", a.handleLogin)
+	mux.HandleFunc("GET /api/v1/auth/tokens", a.handleListTokens)
 	return mux
 }
 

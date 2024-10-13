@@ -6,6 +6,10 @@ vars:
   GREETING: Hello, World!
 
 tasks:
+  build:
+    cmds:
+      - go build -o tmp/api ./cmd/api/...
+    silent: true
   run:
     cmds:
       - air
@@ -13,3 +17,6 @@ tasks:
   default:
     cmds:
       - task: run
+  test:
+    cmds:
+      - go test -v ./cmd/api/...

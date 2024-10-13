@@ -33,7 +33,10 @@ func main() {
 	logger.Println("Server is starting...")
 	logger.Println("Server Running on 8080")
 
-	store := NewInMemoryStore()
+	store, err := NewInMemoryStore()
+	if err != nil {
+		logger.Fatal(err)
+	}
 
 	app := &application{
 		logger: logger,
