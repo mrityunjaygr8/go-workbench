@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -20,6 +21,7 @@ func (a *application) createUser(payload createUserRequest) error {
 		FirstName: payload.FirstName,
 		LastName:  payload.LastName,
 		Password:  payload.Password,
+		CreatedAt: time.Now(),
 	}
 	user.ID = uuid.New()
 	user.Password, err = hashPassword(user.Password)

@@ -24,6 +24,7 @@ type User struct {
 	LastName  string    `json:"last_name"`
 	Password  string    `json:"-"`
 	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Token struct {
