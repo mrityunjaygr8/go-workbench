@@ -45,5 +45,5 @@ type AuthManager interface {
 	// Logout() error
 }
 
-var ErrInvalidCredential = fmt.Errorf("Invalid email or password provided")
-var ErrUserNotFound = fmt.Errorf("User not found")
+var ErrInvalidCredential = fmt.Errorf("invalid email or password provided")
+var ErrUserNotFound = fmt.Errorf("user not found")

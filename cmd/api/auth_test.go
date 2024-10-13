@@ -37,7 +37,7 @@ func TestAuth(t *testing.T) {
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 		var resp ErrorMessage
 		err = json.NewDecoder(rr.Body).Decode(&resp)
-		require.Equal(t, "Invalid email or password provided", resp.Error)
+		require.Equal(t, "invalid email or password provided", resp.Error)
 	})
 	t.Run("test login", func(t *testing.T) {
 		var b bytes.Buffer
@@ -92,6 +92,6 @@ func TestAuth(t *testing.T) {
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 		var resp ErrorMessage
 		err = json.NewDecoder(rr.Body).Decode(&resp)
-		require.Equal(t, "Invalid email or password provided", resp.Error)
+		require.Equal(t, "invalid email or password provided", resp.Error)
 	})
 }

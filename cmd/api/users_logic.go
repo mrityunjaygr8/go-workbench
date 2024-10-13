@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-var ErrUserExists = fmt.Errorf("User already exists")
+var ErrUserExists = fmt.Errorf("user already exists")
 
 func (a *application) createUser(payload createUserRequest) error {
 	_, err := a.store.GetUserByEmail(payload.Email)

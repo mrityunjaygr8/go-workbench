@@ -74,6 +74,6 @@ func TestUsers(t *testing.T) {
 		require.Equal(t, http.StatusBadRequest, rr.Code)
 		var resp ErrorMessage
 		err = json.NewDecoder(rr.Body).Decode(&resp)
-		require.Equal(t, "User already exists", resp.Error)
+		require.Equal(t, "user already exists", resp.Error)
 	})
 }
