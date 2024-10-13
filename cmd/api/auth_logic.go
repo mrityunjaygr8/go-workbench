@@ -19,6 +19,10 @@ func (a *application) login(payload loginRequest) (*Token, error) {
 		return nil, ErrInvalidCredential
 	}
 
+	return a.generateToken(user)
+}
+
+func (a *application) generateToken(user *User) (*Token, error) {
 	now := time.Now()
 	expiry := now.Add(15 * time.Minute)
 
