@@ -167,3 +167,17 @@ func TestAuth(t *testing.T) {
 		require.Equal(t, "not found", resp.Error)
 	})
 }
+
+func TestMe(t *testing.T) {
+	store, err := NewInMemoryStore()
+	require.NoError(t, err)
+	logger := log.New(os.Stdout, "test: ", log.LstdFlags)
+	app := application{
+		store:  store,
+		logger: logger,
+	}
+	_ = app.mountRoutes()
+	t.Run("get the me user", func(t *testing.T) {
+	})
+
+}
