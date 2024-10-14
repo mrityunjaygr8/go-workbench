@@ -29,7 +29,7 @@ func (a *application) revokeToken(token_id uuid.UUID) error {
 		return err
 	}
 
-	token.Revoked = false
+	token.Revoked = true
 	err = a.store.UpdateToken(token)
 	if err != nil {
 		return err

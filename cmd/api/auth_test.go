@@ -125,6 +125,10 @@ func TestAuth(t *testing.T) {
 		mux.ServeHTTP(rr, revokeRequest)
 
 		require.Equal(t, http.StatusOK, rr.Code)
+
+		token, err := store.RetrieveToken(resp.ID)
+		require.NoError(t, err)
+		require.Equal(t, true, token.Revoked)
 	})
 	t.Run("test token revoke invalid uuid", func(t *testing.T) {
 		var revokeBuffer bytes.Buffer
