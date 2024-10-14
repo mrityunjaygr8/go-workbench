@@ -17,7 +17,7 @@ type ErrorMessage struct {
 	Error string `json:"error"`
 }
 
-func (a *application) createUserHandler(w http.ResponseWriter, r *http.Request) {
+func (a *application) handleUserCreate(w http.ResponseWriter, r *http.Request) {
 	var payload createUserRequest
 	_ = json.NewDecoder(r.Body).Decode(&payload)
 
@@ -40,7 +40,7 @@ func (a *application) createUserHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 }
-func (a *application) listUsersHandler(w http.ResponseWriter, r *http.Request) {
+func (a *application) handleUserList(w http.ResponseWriter, r *http.Request) {
 	users, err := a.listUsers()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

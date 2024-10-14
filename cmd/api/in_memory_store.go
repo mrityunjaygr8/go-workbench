@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"os"
+
+	"github.com/google/uuid"
 )
 
 const FILE_NAME = "store.json"
@@ -34,8 +36,8 @@ func (u *InMemoryStore) ListUsers() ([]User, error) {
 	return u.users, nil
 }
 
-func (u *InMemoryStore) InsertUser(user User) error {
-	u.users = append(u.users, user)
+func (u *InMemoryStore) InsertUser(user *User) error {
+	u.users = append(u.users, *user)
 	return nil
 }
 
@@ -45,17 +47,36 @@ func (u *InMemoryStore) GetUserByEmail(email string) (*User, error) {
 			return &user, nil
 		}
 	}
-	return nil, ErrUserNotFound
+	return nil, ErrNotFound
 }
 
-func (u *InMemoryStore) InsertToken(token Token) error {
-	u.tokens = append(u.tokens, token)
+func (u *InMemoryStore) InsertToken(token *Token) error {
+	u.tokens = append(u.tokens, *token)
 	return nil
 
 }
 
 func (u *InMemoryStore) ListTokens() ([]Token, error) {
 	return u.tokens, nil
+}
+
+func (u *InMemoryStore) RetrieveToken(token_id uuid.UUID) (*Token, error) {
+	for _, token := range u.tokens {
+		if token.ID == token_id {
+			return &token, nil
+		}
+	}
+	return nil, ErrNotFound
+}
+
+func (u *InMemoryStore) UpdateToken(token *Token) error {
+	for idx, t := range u.tokens {
+		if t.ID == token.ID {
+			u.tokens[idx] = *token
+			return nil
+		}
+	}
+	return ErrNotFound
 }
 
 func (u *InMemoryStore) Persist() error {

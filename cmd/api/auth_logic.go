@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 const hmacSampleSecret = "correct-horse-battery-staple"
@@ -22,6 +23,20 @@ func (a *application) login(payload loginRequest) (*Token, error) {
 	return a.generateToken(user)
 }
 
+func (a *application) revokeToken(token_id uuid.UUID) error {
+	token, err := a.store.RetrieveToken(token_id)
+	if err != nil {
+		return err
+	}
+
+	token.Revoked = false
+	err = a.store.UpdateToken(token)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (a *application) generateToken(user *User) (*Token, error) {
 	now := time.Now()
 	expiry := now.Add(15 * time.Minute)
@@ -31,6 +46,7 @@ func (a *application) generateToken(user *User) (*Token, error) {
 		Expiry:    expiry,
 		CreatedAt: now,
 		Revoked:   false,
+		ID:        uuid.New(),
 	}
 	tokenTmp := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"email":      user.Email,
@@ -47,7 +63,7 @@ func (a *application) generateToken(user *User) (*Token, error) {
 	}
 	token.Token = tokenString
 
-	err = a.store.InsertToken(token)
+	err = a.store.InsertToken(&token)
 	if err != nil {
 		return nil, err
 	}

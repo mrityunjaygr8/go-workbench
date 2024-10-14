@@ -12,7 +12,7 @@ var ErrUserExists = fmt.Errorf("user already exists")
 
 func (a *application) createUser(payload createUserRequest) error {
 	_, err := a.store.GetUserByEmail(payload.Email)
-	if !errors.Is(err, ErrUserNotFound) || err == nil {
+	if !errors.Is(err, ErrNotFound) || err == nil {
 		return ErrUserExists
 	}
 
@@ -28,7 +28,7 @@ func (a *application) createUser(payload createUserRequest) error {
 	if err != nil {
 		return err
 	}
-	err = a.store.InsertUser(user)
+	err = a.store.InsertUser(&user)
 	return err
 }
 

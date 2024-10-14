@@ -26,10 +26,11 @@ func (a *application) mountRoutes() http.Handler {
 	mux.HandleFunc("GET /", helloHandler)
 	mux.HandleFunc("GET /healthz", healthCheckHandler)
 	mux.HandleFunc("GET /long", longRequestHandler)
-	mux.HandleFunc("POST /api/v1/users", a.createUserHandler)
-	mux.HandleFunc("GET /api/v1/users", a.listUsersHandler)
+	mux.HandleFunc("POST /api/v1/users", a.handleUserCreate)
+	mux.HandleFunc("GET /api/v1/users", a.handleUserList)
 	mux.HandleFunc("POST /api/v1/auth/login", a.handleLogin)
-	mux.HandleFunc("GET /api/v1/auth/tokens", a.handleListTokens)
+	mux.HandleFunc("GET /api/v1/auth/tokens", a.handleTokenList)
+	mux.HandleFunc("POST /api/v1/auth/revoke", a.handleTokenRevoke)
 	return mux
 }
 
